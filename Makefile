@@ -62,10 +62,13 @@ static: $(STLIBNAME)
 
 # Binaries:
 hiredis-example-libevent: example-libevent.c adapters/libevent.h $(STLIBNAME)
-	$(CC) -o $@ $(REAL_CFLAGS) $(REAL_LDFLAGS) -levent example-libevent.c $(STLIBNAME)
+	$(CC) -o $@ $(REAL_CFLAGS) $(REAL_LDFLAGS) example-libevent.c $(STLIBNAME) -levent
 
 hiredis-example-libev: example-libev.c adapters/libev.h $(STLIBNAME)
-	$(CC) -o $@ $(REAL_CFLAGS) $(REAL_LDFLAGS) -lev example-libev.c $(STLIBNAME)
+	$(CC) -o $@ $(REAL_CFLAGS) $(REAL_LDFLAGS) example-libev.c $(STLIBNAME) -lev
+
+hiredis-example-epoll: example-epoll.c adapters/epoll.h $(STLIBNAME)
+	$(CC) -o $@ $(REAL_CFLAGS) $(REAL_LDFLAGS) example-epoll.c $(STLIBNAME)
 
 ifndef AE_DIR
 hiredis-example-ae:
