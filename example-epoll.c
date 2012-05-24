@@ -9,7 +9,10 @@
 void getCallback(redisAsyncContext *c, void *r, void *privdata) {
     redisReply *reply = r;
     if (reply == NULL) return;
-    printf("k: %s\n", reply->str);
+    printf("argv[%s]: %s\n", (char*)privdata, reply->str);
+
+    /* Disconnect after receiving the reply to GET */
+    redisAsyncDisconnect(c);
 }
 
 void connectCallback(const redisAsyncContext *c, int status) {
@@ -47,15 +50,8 @@ int main (int argc, char **argv) {
     redisEpollAttach(c,efd);
     redisAsyncSetConnectCallback(c,connectCallback);
     redisAsyncSetDisconnectCallback(c,disconnectCallback);
-    redisAsyncCommand(c, NULL, NULL, "SET k 15");
-    redisAsyncCommand(c, getCallback, (char*)"end-1", "GET k");
-    redisAsyncCommand(c, NULL, NULL, "SET k 16");
-    redisAsyncCommand(c, getCallback, (char*)"end-1", "GET k");
-    redisAsyncCommand(c, NULL, NULL, "SET k 17");
-    redisAsyncCommand(c, getCallback, (char*)"end-1", "GET k");
-    redisAsyncCommand(c, NULL, NULL, "SET k 19");
-    redisAsyncCommand(c, getCallback, (char*)"end-1", "GET k");
-    redisAsyncDisconnect(c);
+    redisAsyncCommand(c, NULL, NULL, "SET key %b", argv[argc-1], strlen(argv[argc-1]));
+    redisAsyncCommand(c, getCallback, (char*)"end-1", "GET key");
     redisEpollWait(efd,2,10,c);
     return 0;
 }

@@ -15,7 +15,6 @@ typedef struct redisEpollEvents {
 
 
 static void redisEpollAddRead(void *privdata) {
-    printf("add read\n");
     redisEpollEvents *e = (redisEpollEvents*)privdata;
     e->event.data.fd = e->fd;
     e->event.events |= EPOLLIN ;
@@ -23,7 +22,6 @@ static void redisEpollAddRead(void *privdata) {
 }
 
 static void redisEpollDelRead(void *privdata) {
-    printf("del read\n");
     redisEpollEvents *e = (redisEpollEvents*)privdata;
     e->event.data.fd = e->fd;
     e->event.events &= !EPOLLIN ;
@@ -31,7 +29,6 @@ static void redisEpollDelRead(void *privdata) {
 }
 
 static void redisEpollAddWrite(void *privdata) {
-    printf("add write\n");
     redisEpollEvents *e = (redisEpollEvents*)privdata;
     e->event.data.fd = e->fd;
     e->event.events |= EPOLLOUT ;
@@ -39,7 +36,6 @@ static void redisEpollAddWrite(void *privdata) {
 }
 
 static void redisEpollDelWrite(void *privdata) {
-    printf("del write\n");
     redisEpollEvents *e = (redisEpollEvents*)privdata;
     e->event.data.fd = e->fd;
     e->event.events &= !EPOLLOUT ;
@@ -47,7 +43,6 @@ static void redisEpollDelWrite(void *privdata) {
 }
 
 static void redisEpollCleanup(void *privdata) {
-    printf("clean\n");
     redisEpollEvents *e = (redisEpollEvents*)privdata;
     epoll_ctl (e->efd, EPOLL_CTL_DEL, e->fd, NULL);    
     free(e);
@@ -65,11 +60,9 @@ static void redisEpollWait(int efd, int max_events, int timeout, redisAsyncConte
 		return;
         for (i = 0; i < num_fds; i++) {
             if (events[i].events & EPOLLIN) {
-                printf("READ\n");
                 redisAsyncHandleRead(c);
             }
             else if (events[i].events & EPOLLOUT) {
-                printf("WRITE\n");
                 redisAsyncHandleWrite(c);
             }
 	    else{
